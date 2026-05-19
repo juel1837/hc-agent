@@ -19,9 +19,14 @@ export default function SettingsPage() {
 
   const load = async () => {
     if (!user) return;
-    const s = await getUserSettings(user.uid);
-    if (s) { setApiKey(s.apiKey||''); setSystemPrompt(s.systemPrompt||''); setDisplayName(s.displayName||''); }
-    setLoading(false);
+    try {
+      const s = await getUserSettings(user.uid);
+      if (s) { setApiKey(s.apiKey||''); setSystemPrompt(s.systemPrompt||''); setDisplayName(s.displayName||''); }
+    } catch (err) {
+      console.error('Failed to load settings:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSave = async () => {
