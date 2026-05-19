@@ -264,7 +264,7 @@ export default function DashboardPage() {
                 <YAxis stroke="#64748b" fontSize={12} />
                 <Tooltip
                   contentStyle={{ background: '#131b2e', border: '1px solid #1e293b', borderRadius: 10, fontSize: 13 }}
-                  formatter={(value: number) => [`৳${value.toLocaleString()}`, 'Spent']}
+                  formatter={(value: any) => [`৳${Number(value).toLocaleString()}`, 'Spent']}
                 />
                 <Bar dataKey="amount" fill="#2563eb" radius={[6, 6, 0, 0]} />
               </BarChart>
