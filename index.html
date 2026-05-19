@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HC Agent - Vanilla</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase Compat Libraries (v8 API style for easier vanilla JS) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- ========================
+       LOGIN PAGE
+       ======================== -->
+  <div id="page-login" class="page active fade-in" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+    <div class="glass-card" style="width: 100%; max-width: 400px; padding: 40px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <i data-lucide="bot" style="width: 48px; height: 48px; color: #3b82f6; margin: 0 auto 16px;"></i>
+        <h1 style="font-size: 28px; font-weight: 800;" class="gradient-text">HC Agent</h1>
+        <p style="color: var(--text-secondary); margin-top: 8px;">Sign in to continue</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="email" id="auth-email" placeholder="Email address" class="input-dark">
+        <input type="password" id="auth-pass" placeholder="Password" class="input-dark">
+        
+        <button id="btn-login" class="btn-primary" style="margin-top: 8px;">Sign In / Sign Up</button>
+        <p id="auth-error" style="color: #ef4444; font-size: 13px; text-align: center; display: none;"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================
+       DASHBOARD PAGE
+       ======================== -->
+  <div id="page-dashboard" class="page" style="display: flex; min-height: 100vh;">
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div style="padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color);">
+        <div style="background: linear-gradient(135deg, #3b82f6, #7c3aed); padding: 8px; border-radius: 12px;">
+          <i data-lucide="bot" style="color: white; width: 24px; height: 24px;"></i>
+        </div>
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800;" class="gradient-text">HC Agent</h2>
+        </div>
+      </div>
+
+      <nav style="padding: 24px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px;">
+        <button class="nav-item active" data-tab="dashboard"><i data-lucide="layout-dashboard"></i> Dashboard</button>
+        <button class="nav-item" data-tab="expenses"><i data-lucide="wallet"></i> Expenses</button>
+        <button class="nav-item" data-tab="notes"><i data-lucide="file-text"></i> Notes</button>
+        <button class="nav-item" data-tab="tasks"><i data-lucide="check-square"></i> Tasks</button>
+        <button class="nav-item" data-tab="ai"><i data-lucide="message-square"></i> AI Agent</button>
+        <button class="nav-item" data-tab="settings"><i data-lucide="settings"></i> Settings</button>
+      </nav>
+
+      <div style="padding: 16px; border-top: 1px solid var(--border-color);">
+        <div class="glass-card" style="padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="overflow: hidden;">
+            <p id="user-email-display" style="font-size: 13px; font-weight: 600; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"></p>
+          </div>
+          <button id="btn-logout" style="background: none; border: none; color: #ef4444; cursor: pointer;"><i data-lucide="log-out"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main style="flex: 1; margin-left: 260px; padding: 32px;">
+      
+      <!-- TAB: DASHBOARD -->
+      <div id="tab-dashboard" class="tab-content active fade-in">
+        <h1 style="font-size: 28px; font-weight: 800; margin-bottom: 24px;">Welcome back!</h1>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="color: var(--text-secondary); margin-bottom: 12px;">Total Expenses</h3>
+            <p id="dash-expenses" style="font-size: 32px; font-weight: 800; color: #f97316;">৳0</p>
+          </div>
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="color: var(--text-secondary); margin-bottom: 12px;">Pending Tasks</h3>
+            <p id="dash-tasks" style="font-size: 32px; font-weight: 800; color: #3b82f6;">0</p>
+          </div>
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="color: var(--text-secondary); margin-bottom: 12px;">Total Notes</h3>
+            <p id="dash-notes" style="font-size: 32px; font-weight: 800; color: #22c55e;">0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: EXPENSES -->
+      <div id="tab-expenses" class="tab-content fade-in">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h1 style="font-size: 28px; font-weight: 800;">Expenses</h1>
+          <button class="btn-primary" onclick="document.getElementById('modal-expense').style.display='block'"><i data-lucide="plus"></i> Add</button>
+        </div>
+        <div id="expenses-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      </div>
+
+      <!-- TAB: NOTES -->
+      <div id="tab-notes" class="tab-content fade-in">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h1 style="font-size: 28px; font-weight: 800;">Notes</h1>
+          <button class="btn-primary" onclick="openNoteModal()"><i data-lucide="plus"></i> Add</button>
+        </div>
+        <div id="notes-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
+      </div>
+
+      <!-- TAB: TASKS -->
+      <div id="tab-tasks" class="tab-content fade-in">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h1 style="font-size: 28px; font-weight: 800;">Tasks</h1>
+          <button class="btn-primary" onclick="document.getElementById('modal-task').style.display='block'"><i data-lucide="plus"></i> Add</button>
+        </div>
+        <div id="tasks-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      </div>
+
+      <!-- TAB: SETTINGS -->
+      <div id="tab-settings" class="tab-content fade-in">
+        <h1 style="font-size: 28px; font-weight: 800; margin-bottom: 24px;">Settings</h1>
+        <div class="glass-card" style="padding: 24px; max-width: 600px;">
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; color: var(--text-secondary); margin-bottom: 8px;">Gemini API Key</label>
+            <input type="password" id="setting-apikey" class="input-dark" placeholder="AIzaSy...">
+          </div>
+          <button id="btn-save-settings" class="btn-primary" style="width: 100%;">Save Settings</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <div id="modal-expense" class="modal-overlay" style="display: none;">
+    <div class="modal-content glass-card fade-in">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <h2>Add Expense</h2>
+        <button onclick="this.parentElement.parentElement.parentElement.style.display='none'" class="icon-btn"><i data-lucide="x"></i></button>
+      </div>
+      <input type="text" id="exp-title" placeholder="Title" class="input-dark" style="margin-bottom: 12px;">
+      <input type="number" id="exp-amount" placeholder="Amount (৳)" class="input-dark" style="margin-bottom: 12px;">
+      <button id="btn-add-expense" class="btn-primary" style="width: 100%;">Save Expense</button>
+    </div>
+  </div>
+
+  <div id="modal-note" class="modal-overlay" style="display: none;">
+    <div class="modal-content glass-card fade-in">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <h2>Note</h2>
+        <button onclick="this.parentElement.parentElement.parentElement.style.display='none'" class="icon-btn"><i data-lucide="x"></i></button>
+      </div>
+      <input type="text" id="note-title" placeholder="Title" class="input-dark" style="margin-bottom: 12px;">
+      <textarea id="note-content" placeholder="Content..." class="input-dark" rows="6" style="margin-bottom: 12px; resize: vertical;"></textarea>
+      <input type="hidden" id="note-id">
+      <button id="btn-save-note" class="btn-primary" style="width: 100%;">Save Note</button>
+    </div>
+  </div>
+
+  <div id="modal-task" class="modal-overlay" style="display: none;">
+    <div class="modal-content glass-card fade-in">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <h2>Add Task</h2>
+        <button onclick="this.parentElement.parentElement.parentElement.style.display='none'" class="icon-btn"><i data-lucide="x"></i></button>
+      </div>
+      <input type="text" id="task-title" placeholder="Task name" class="input-dark" style="margin-bottom: 12px;">
+      <input type="date" id="task-date" class="input-dark" style="margin-bottom: 12px;">
+      <button id="btn-add-task" class="btn-primary" style="width: 100%;">Save Task</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
