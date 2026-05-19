@@ -52,8 +52,9 @@ export default function NotesPage() {
   if (loading) return <div style={{ display:'flex',alignItems:'center',justifyContent:'center',minHeight:'60vh' }}><div className="spinner" style={{ width:36,height:36 }} /></div>;
 
   return (
-    <div className="fade-in">
-      <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24,flexWrap:'wrap',gap:12 }}>
+    <>
+      <div className="fade-in">
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24,flexWrap:'wrap',gap:12 }}>
         <div><h1 style={{ fontSize:24,fontWeight:800,marginBottom:4 }}>Notes</h1><p style={{ color:'#94a3b8',fontSize:14 }}>Capture your ideas</p></div>
         <button onClick={openNew} className="btn-primary"><Plus size={18} /> New Note</button>
       </div>
@@ -80,8 +81,10 @@ export default function NotesPage() {
         {filtered.length===0 && <div className="glass-card" style={{ padding:40,textAlign:'center',color:'#475569',gridColumn:'1/-1' }}><StickyNote size={40} style={{ margin:'0 auto 12px',opacity:0.3 }} /><p>No notes found</p></div>}
       </div>
 
+      </div>
+
       {showEditor && (<>
-        <div className="mobile-overlay" onClick={()=>setShowEditor(false)} />
+        <div className="mobile-overlay" onClick={()=>setShowEditor(false)} style={{ position:'fixed', inset:0, zIndex:50, background:'rgba(0,0,0,0.6)', backdropFilter:'blur(4px)' }} />
         <div style={{ position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:'90%',maxWidth:560,zIndex:60,background:'linear-gradient(135deg,#131b2e,#0f172a)',border:'1px solid #1e293b',borderRadius:20,padding:28,boxShadow:'0 20px 60px rgba(0,0,0,0.6)' }} className="fade-in">
           <div style={{ display:'flex',justifyContent:'space-between',marginBottom:20 }}>
             <h2 style={{ fontSize:18,fontWeight:700 }}>{editId?'Edit':'New'} Note</h2>
@@ -94,6 +97,6 @@ export default function NotesPage() {
           </div>
         </div>
       </>)}
-    </div>
+    </>
   );
 }

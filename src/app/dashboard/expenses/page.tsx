@@ -89,8 +89,9 @@ export default function ExpensesPage() {
   }
 
   return (
-    <div className="fade-in">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+    <>
+      <div className="fade-in">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>Expenses</h1>
           <p style={{ color: '#94a3b8', fontSize: 14 }}>Track and manage your spending</p>
@@ -167,10 +168,12 @@ export default function ExpensesPage() {
         )}
       </div>
 
+      </div>
+
       {/* Add Modal */}
       {showAdd && (
         <>
-          <div className="mobile-overlay" onClick={() => setShowAdd(false)} />
+          <div className="mobile-overlay" onClick={() => setShowAdd(false)} style={{ position:'fixed', inset:0, zIndex:50, background:'rgba(0,0,0,0.6)', backdropFilter:'blur(4px)' }} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: '90%', maxWidth: 440, zIndex: 60,
@@ -216,6 +219,6 @@ export default function ExpensesPage() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }
