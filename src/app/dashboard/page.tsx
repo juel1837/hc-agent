@@ -232,7 +232,7 @@ export default function DashboardPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: '#131b2e', border: '1px solid #1e293b', borderRadius: 10, fontSize: 13 }}
-                    formatter={(value: number) => [`৳${value.toLocaleString()}`, 'Amount']}
+                    formatter={(value: any) => [`৳${Number(value).toLocaleString()}`, 'Amount']}
                   />
                 </PieChart>
               </ResponsiveContainer>
